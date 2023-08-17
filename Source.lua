@@ -296,7 +296,15 @@ task.spawn(function()
                     
                     local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
 
-                    PlayerCharacter.HumanoidRootPart.Color = Color3.fromRGB(x, y, z)
+                    if PlayerCharacter ~= nil then
+                        
+                        if PlayerCharacter.HumanoidRootPart ~= nil then
+                            
+                            PlayerCharacter.HumanoidRootPart.Color = Color3.fromRGB(x, y, z)
+
+                        end
+
+                    end
 
                 end)
 
@@ -306,7 +314,7 @@ task.spawn(function()
 
     end
 
-    while true do
+    while task.wait() do
         
         while x < 255 do
 
@@ -406,7 +414,15 @@ RubyHubFunctions.Services.RunService.RenderStepped:Connect(function()
                     
                     local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
 
-                    getgenv().EnlargedHitboxSettings.OriginalHitboxSizes[Player.Name] = PlayerCharacter.HumanoidRootPart.Size
+                    if PlayerCharacter ~= nil then
+                        
+                        if PlayerCharacter.HumanoidRootPart ~= nil then
+                            
+                            getgenv().EnlargedHitboxSettings.OriginalHitboxSizes[Player.Name] = PlayerCharacter.HumanoidRootPart.Size
+
+                        end
+
+                    end
 
                 end
 
@@ -414,10 +430,31 @@ RubyHubFunctions.Services.RunService.RenderStepped:Connect(function()
                     
                     local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
 
-                    PlayerCharacter.HumanoidRootPart.Size = Vector3.new(getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize)
-                    PlayerCharacter.HumanoidRootPart.Transparency = 0.7
-                    PlayerCharacter.HumanoidRootPart.Material = "Neon"
-                    PlayerCharacter.HumanoidRootPart.CanCollide = false
+                    if PlayerCharacter ~= nil then
+                        
+                        if not PlayerCharacter:FindFirstChild("Highlight") then
+                        
+                            if PlayerCharacter.HumanoidRootPart ~= nil then
+                            
+                                if PlayerCharacter.Humanoid.Health > 0 then
+                                    
+                                    PlayerCharacter.HumanoidRootPart.Size = Vector3.new(getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize)
+                                    PlayerCharacter.HumanoidRootPart.Transparency = 0.7
+                                    PlayerCharacter.HumanoidRootPart.Material = "Neon"
+                                    PlayerCharacter.HumanoidRootPart.CanCollide = false
+        
+                                else
+        
+                                    PlayerCharacter.HumanoidRootPart.Size = Vector3.new(1, 1, 1)
+                                    PlayerCharacter.HumanoidRootPart.Transparency = 1
+        
+                                end
+        
+                            end
+    
+                        end
+
+                    end
 
                 end)
 
@@ -435,12 +472,26 @@ RubyHubFunctions.Services.RunService.RenderStepped:Connect(function()
                     
                     pcall(function()
                     
-                        local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
+                        if PlayerCharacter ~= nil then
+                            
+                            if PlayerCharacter.HumanoidRootPart ~= nil then
+                            
+                                if PlayerCharacter.Humanoid.Health > 0 then
+                                    
+                                    PlayerCharacter.HumanoidRootPart.Size = Vector3.new(getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize)
+                                    PlayerCharacter.HumanoidRootPart.Transparency = 0.7
+                                    PlayerCharacter.HumanoidRootPart.Material = "Neon"
+                                    PlayerCharacter.HumanoidRootPart.CanCollide = false
+        
+                                else
+        
+                                    PlayerCharacter:Destroy()
+        
+                                end
+        
+                            end
     
-                        PlayerCharacter.HumanoidRootPart.Size = getgenv().EnlargedHitboxSettings.OriginalHitboxSizes[Player.Name]
-                        PlayerCharacter.HumanoidRootPart.Transparency = 1
-                        PlayerCharacter.HumanoidRootPart.Material = "Neon"
-                        PlayerCharacter.HumanoidRootPart.CanCollide = false
+                        end
     
                     end)
 
