@@ -729,6 +729,13 @@ RubyHubFunctions.Services.UserInputService.InputEnded:Connect(function(Key)
         
         getgenv().EnlargedHitboxSettings.VisibleGui = not getgenv().EnlargedHitboxSettings.VisibleGui
 
+        RubyHubFunctions.ToastNotification({
+            Title = "GUI Toggled",
+            Text = "Press 'P' to toggle it again!",
+            Icon = RubyHubFunctions.Icons.Announcement,
+            Duration = 5
+        })
+
     end
 
 end)
@@ -753,49 +760,29 @@ RubyHubFunctions.Services.RunService.RenderStepped:Connect(function()
                             
                             if PlayerCharacter.Humanoid.Health > 0 then
 
-                                if not PlayerCharacter:FindFirstChild("Highlight") and game.PlaceId == 12355337193 then
-
-                                    if not Player:FindFirstChild("ESPOutline") then
+                                if not Player:FindFirstChild("ESPOutline") then
                                     
-                                        local Highlight = Instance.new("Highlight")
-                                        Highlight.Name = "ESPOutline"
-                                        Highlight.Parent = Player
-                                        Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                                        Highlight.Adornee = PlayerCharacter
-                                        Highlight.OutlineTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency
-                                        Highlight.FillTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency * 2.5
-                                        Highlight.Enabled = true
-                                    
-                                    elseif Player:FindFirstChild("ESPOutline") then
+                                    local Highlight = Instance.new("Highlight")
+                                    Highlight.Name = "ESPOutline"
+                                    Highlight.Parent = Player
+                                    Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                                    Highlight.Adornee = PlayerCharacter
+                                    Highlight.OutlineTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency
+                                    Highlight.FillTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency * 2.5
+                                    Highlight.Enabled = true
+                                
+                                elseif Player:FindFirstChild("ESPOutline") then
 
-                                        Player:FindFirstChild("ESPOutline").OutlineTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency
-                                        Player:FindFirstChild("ESPOutline").FillTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency * 2.5
-                                        Player:FindFirstChild("ESPOutline").Enabled = true
-                                        Player:FindFirstChild("ESPOutline").Adornee = PlayerCharacter
+                                    Player:FindFirstChild("ESPOutline").OutlineTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency
+                                    Player:FindFirstChild("ESPOutline").FillTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency * 2.5
+                                    Player:FindFirstChild("ESPOutline").Enabled = true
+                                    Player:FindFirstChild("ESPOutline").Adornee = PlayerCharacter
 
-                                    end
-    
-                                else
+                                end
 
-                                    if not Player:FindFirstChild("ESPOutline") then
-                                    
-                                        local Highlight = Instance.new("Highlight")
-                                        Highlight.Name = "ESPOutline"
-                                        Highlight.Parent = Player
-                                        Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                                        Highlight.Adornee = PlayerCharacter
-                                        Highlight.OutlineTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency
-                                        Highlight.FillTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency * 2.5
-                                        Highlight.Enabled = true
-                                    
-                                    elseif Player:FindFirstChild("ESPOutline") then
+                                if game.PlaceId == 12355337193 and PlayerCharacter:FindFirstChild("Highlight") then
 
-                                        Player:FindFirstChild("ESPOutline").OutlineTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency
-                                        Player:FindFirstChild("ESPOutline").FillTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency * 2.5
-                                        Player:FindFirstChild("ESPOutline").Enabled = true
-                                        Player:FindFirstChild("ESPOutline").Adornee = PlayerCharacter
-
-                                    end
+                                    Player:FindFirstChild("ESPOutline").Enabled = false
 
                                 end
     
@@ -868,47 +855,30 @@ RubyHubFunctions.Services.RunService.RenderStepped:Connect(function()
                     local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
 
                     if PlayerCharacter ~= nil then
-                        
-                        if not PlayerCharacter:FindFirstChild("Highlight") and game.PlaceId == 12355337193 then
+
+                        if PlayerCharacter:FindFirstChild("HumanoidRootPart") then
+                                
+                            if PlayerCharacter.Humanoid.Health > 0 then
+                                
+                                PlayerCharacter.HumanoidRootPart.Size = Vector3.new(getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize)
+                                PlayerCharacter.HumanoidRootPart.Transparency = getgenv().EnlargedHitboxSettings.HitboxTransparency
+                                PlayerCharacter.HumanoidRootPart.Material = "Neon"
+                                PlayerCharacter.HumanoidRootPart.CanCollide = false
     
-                            if PlayerCharacter:FindFirstChild("HumanoidRootPart") then
-                                
-                                if PlayerCharacter.Humanoid.Health > 0 then
-                                    
-                                    PlayerCharacter.HumanoidRootPart.Size = Vector3.new(getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize)
-                                    PlayerCharacter.HumanoidRootPart.Transparency = getgenv().EnlargedHitboxSettings.HitboxTransparency
-                                    PlayerCharacter.HumanoidRootPart.Material = "Neon"
-                                    PlayerCharacter.HumanoidRootPart.CanCollide = false
-        
-                                else
-        
-                                    PlayerCharacter.HumanoidRootPart.Size = Vector3.new(1, 1, 1)
-                                    PlayerCharacter.HumanoidRootPart.Transparency = 1
-        
-                                end
-        
+                            else
+    
+                                PlayerCharacter.HumanoidRootPart.Size = Vector3.new(1, 1, 1)
+                                PlayerCharacter.HumanoidRootPart.Transparency = 1
+    
                             end
 
-                        else
-
-                            if PlayerCharacter:FindFirstChild("HumanoidRootPart") then
-                                
-                                if PlayerCharacter.Humanoid.Health > 0 then
-                                    
-                                    PlayerCharacter.HumanoidRootPart.Size = Vector3.new(getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize)
-                                    PlayerCharacter.HumanoidRootPart.Transparency = getgenv().EnlargedHitboxSettings.HitboxTransparency
-                                    PlayerCharacter.HumanoidRootPart.Material = "Neon"
-                                    PlayerCharacter.HumanoidRootPart.CanCollide = false
-        
-                                else
-        
-                                    PlayerCharacter.HumanoidRootPart.Size = Vector3.new(1, 1, 1)
-                                    PlayerCharacter.HumanoidRootPart.Transparency = 1
-        
-                                end
-        
+                            if game.PlaceId == 12355337193 and PlayerCharacter:FindFirstChild("Highlight") then
+                            
+                                PlayerCharacter.HumanoidRootPart.Size = Vector3.new(1, 1, 1)
+                                PlayerCharacter.HumanoidRootPart.Transparency = 1
+    
                             end
-
+    
                         end
 
                     end
