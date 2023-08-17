@@ -280,41 +280,41 @@ RubyHubFunctions.ToastNotification({
     Duration = 5
 })
 
-task.spawn(function()
-    
-    local x = 0
-    local y = 0
-    local z = 255
-
-    local function UpdateColors()
+local function UpdateColors(Color)
         
-        for _, Player in pairs(RubyHubFunctions.GetPlayers()) do
-            
-            if Player ~= RubyHubFunctions.GetLocalPlayer() or Player.Name ~= RubyHubFunctions.GetLocalPlayer().Name then
+    for _, Player in pairs(RubyHubFunctions.GetPlayers()) do
+        
+        if Player ~= RubyHubFunctions.GetLocalPlayer() or Player.Name ~= RubyHubFunctions.GetLocalPlayer().Name then
 
-                pcall(function()
+            pcall(function()
+                
+                local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
+
+                if PlayerCharacter ~= nil then
                     
-                    local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
-
-                    if PlayerCharacter ~= nil then
+                    if PlayerCharacter:FindFirstChild("HumanoidRootPart") then
                         
-                        if PlayerCharacter.HumanoidRootPart ~= nil then
-                            
-                            PlayerCharacter.HumanoidRootPart.Color = Color3.fromRGB(x, y, z)
-
-                        end
+                        PlayerCharacter.HumanoidRootPart.Color = Color
 
                     end
 
-                end)
+                end
 
-            end
+            end)
 
         end
 
     end
 
-    while task.wait() do
+end
+
+spawn(function()
+    
+    local x = 0
+    local y = 0
+    local z = 255
+
+    while true do
         
         while x < 255 do
 
@@ -322,7 +322,11 @@ task.spawn(function()
 
             if getgenv().EnlargedHitboxSettings.Rainbow == true then
                 
-                UpdateColors()
+                UpdateColors(Color3.fromRGB(x, y, z))
+            
+            else
+
+                UpdateColors(Color3.fromRGB(ToggleColours[true]))
 
             end
 
@@ -338,7 +342,11 @@ task.spawn(function()
 
             if getgenv().EnlargedHitboxSettings.Rainbow == true then
                 
-                UpdateColors()
+                UpdateColors(Color3.fromRGB(x, y, z))
+            
+            else
+
+                UpdateColors(Color3.fromRGB(ToggleColours[true]))
 
             end
 
@@ -354,7 +362,11 @@ task.spawn(function()
 
             if getgenv().EnlargedHitboxSettings.Rainbow == true then
                 
-                UpdateColors()
+                UpdateColors(Color3.fromRGB(x, y, z))
+            
+            else
+
+                UpdateColors(Color3.fromRGB(ToggleColours[true]))
 
             end
 
@@ -416,7 +428,7 @@ RubyHubFunctions.Services.RunService.RenderStepped:Connect(function()
 
                     if PlayerCharacter ~= nil then
                         
-                        if PlayerCharacter.HumanoidRootPart ~= nil then
+                        if PlayerCharacter:FindFirstChild("HumanoidRootPart") then
                             
                             getgenv().EnlargedHitboxSettings.OriginalHitboxSizes[Player.Name] = PlayerCharacter.HumanoidRootPart.Size
 
@@ -432,9 +444,9 @@ RubyHubFunctions.Services.RunService.RenderStepped:Connect(function()
 
                     if PlayerCharacter ~= nil then
                         
-                        if not PlayerCharacter:FindFirstChild("Highlight") then
+                        if not PlayerCharacter:FindFirstChild("Highlight") and game.PlaceId == 12355337193 then
                         
-                            if PlayerCharacter.HumanoidRootPart ~= nil then
+                            if PlayerCharacter:FindFirstChild("HumanoidRootPart") then
                             
                                 if PlayerCharacter.Humanoid.Health > 0 then
                                     
@@ -471,23 +483,15 @@ RubyHubFunctions.Services.RunService.RenderStepped:Connect(function()
                 if getgenv().EnlargedHitboxSettings.OriginalHitboxSizes[Player.Name] ~= nil then
                     
                     pcall(function()
+
+                        local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
                     
                         if PlayerCharacter ~= nil then
                             
-                            if PlayerCharacter.HumanoidRootPart ~= nil then
+                            if PlayerCharacter:FindFirstChild("HumanoidRootPart") then
                             
-                                if PlayerCharacter.Humanoid.Health > 0 then
-                                    
-                                    PlayerCharacter.HumanoidRootPart.Size = Vector3.new(getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize)
-                                    PlayerCharacter.HumanoidRootPart.Transparency = 0.7
-                                    PlayerCharacter.HumanoidRootPart.Material = "Neon"
-                                    PlayerCharacter.HumanoidRootPart.CanCollide = false
-        
-                                else
-        
-                                    PlayerCharacter:Destroy()
-        
-                                end
+                                PlayerCharacter.HumanoidRootPart.Size = getgenv().EnlargedHitboxSettings.OriginalHitboxSizes[Player.Name]
+                                PlayerCharacter.HumanoidRootPart.Transparency = 1
         
                             end
     
