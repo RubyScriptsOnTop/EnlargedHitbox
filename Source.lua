@@ -57,7 +57,7 @@ local ToggleButton_3 = Instance.new("ImageButton")
 --Properties:
 
 EnlargedHitbox.Name = "EnlargedHitbox"
-EnlargedHitbox.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+EnlargedHitbox.Parent = game.Players.LocalPlayer:WaitForChild("CoreGui")
 EnlargedHitbox.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 Background.Name = "Background"
