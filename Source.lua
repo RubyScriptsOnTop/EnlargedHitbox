@@ -15,9 +15,15 @@ getgenv().RHF_Settings = {
     ErrorToastNotifications = false -- Toast Notifications For Errors: default = false
 }
 
-local ToggleColours = {
-    [true] = Color3.fromRGB(97, 255, 79),
-    [false] = Color3.fromRGB(255, 80, 80)
+local ExtraSettings = {
+    ToggleColours = {
+        [true] = Color3.fromRGB(97, 255, 79),
+        [false] = Color3.fromRGB(255, 80, 80)
+    },
+    ToggleName = {
+        [true] = "Enabled",
+        [false] = "Disabled"
+    }
 }
 
 RubyHubFunctions = loadstring(game:HttpGet("https://raw.githubusercontent.com/RubyScriptsOnTop/RubyHubFunctions/main/source.lua"))()
@@ -82,6 +88,7 @@ local ToggleTip = Instance.new("TextLabel")
 EnlargedHitbox.Name = "EnlargedHitbox"
 EnlargedHitbox.Parent = RubyHubFunctions.Services.CoreGui
 EnlargedHitbox.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+EnlargedHitbox.Enabled = false
 
 Background.Name = "Background"
 Background.Parent = EnlargedHitbox
@@ -479,10 +486,153 @@ RubyHubFunctions.ToastNotification({
     Duration = 5
 })
 
+RubyHubFunctions.StartupAnimation({
+    Title = "Enlarged ESP", -- default = "Ruby Hub Functions"
+    LoadingText = "Loading Script...", -- default = "Loading..."
+    Icon = RubyHubFunctions.Icons.RubyHubNoBG -- default = RubyHubFunctions.Icons.RubyHubNoBG
+})
+
+task.wait(0.5)
+
+EnlargedHitbox.Enabled = true
+
 local dragging
 local dragInput
 local dragStart
 local startPos
+
+local EspHighlight = Instance.new("Highlight")
+EspHighlight.Name = "Highlight"
+
+function AddEsp(Player)
+    
+    local NewHighlight = EspHighlight:Clone()
+    NewHighlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    NewHighlight.Parent = Player
+    
+    if Player.Character then
+        
+        NewHighlight.Adornee = Player.Character
+
+    end
+
+end
+
+function CheckPosition(Player)
+
+    if Player and RubyHubFunctions.GetLocalPlayer() then
+        
+        if Player.Character and RubyHubFunctions.GetLocalPlayer().Character then
+
+            local Distance = 0
+
+            Success, Error = pcall(function()
+                Distance = (Player.Character.PrimaryPart.Position - RubyHubFunctions.GetLocalPlayer().Character.PrimaryPart.Position).magnitude
+            end)
+            
+            return Distance
+
+        end
+
+    end
+
+end
+
+function UpdateEsp(Player, Visible)
+    
+    if Player:FindFirstChild("Highlight") ~= nil then
+        
+        local Highlight = Player:FindFirstChild("Highlight")
+
+        Highlight.Enabled = Visible
+        Highlight.OutlineTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency
+        Highlight.FillTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency * 2.5
+
+        if Player.Character ~= nil then
+
+            local PlayerCharacter = Player.Character
+            
+            if Player.Character:FindFirstChild("Humanoid") ~= nil then
+                
+                if Player.Character:FindFirstChild("Humanoid").Health > 0 then
+                    
+                    Highlight.Adornee = Player.Character
+
+                    if game.PlaceId == 12355337193 and PlayerCharacter:FindFirstChild("Highlight") then
+                        
+                        Highlight.Enabled = false
+
+                    end
+                
+                else
+
+                    Highlight.Enabled = false
+
+                end
+
+            end
+
+        end
+    
+    else
+
+        AddEsp(Player)
+
+    end
+
+end
+
+function UpdateHitbox(Player, Visible)
+
+    if Player.Character ~= nil then
+        
+        local PlayerCharacter = Player.Character
+
+        if PlayerCharacter:FindFirstChild("HumanoidRootPart") ~= nil then
+            
+            pcall(function()
+                
+                if Visible == true then
+                
+                    local Hitbox = PlayerCharacter:FindFirstChild("HumanoidRootPart")
+    
+                    if PlayerCharacter.Humanoid.Health > 0 then
+                        
+                        Hitbox.Size = Vector3.new(getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize)
+                        Hitbox.Material = "Neon"
+                        Hitbox.Transparency = getgenv().EnlargedHitboxSettings.HitboxTransparency
+                        Hitbox.CanCollide = false
+                    
+                    else
+    
+                        Hitbox.Size = Vector3.new(1, 1, 1)
+                        Hitbox.Transparency = 1
+    
+                    end
+
+                    if game.PlaceId == 12355337193 and PlayerCharacter:FindFirstChild("Highlight") then
+                        
+                        Hitbox.Size = Vector3.new(1, 1, 1)
+                        Hitbox.Transparency = 1
+
+                    end
+                
+                else
+    
+                    local Hitbox = PlayerCharacter:FindFirstChild("HumanoidRootPart")
+
+                    Hitbox.Size = Vector3.new(1, 1, 1)
+                    Hitbox.Transparency = 1
+    
+                end
+
+            end)
+
+        end
+
+    end
+
+end
 
 function UpdateColors(Color)
         
@@ -490,11 +640,9 @@ function UpdateColors(Color)
         
         for _, Player in pairs(RubyHubFunctions.GetPlayers()) do
         
-            if Player ~= RubyHubFunctions.GetLocalPlayer() or Player.Name ~= RubyHubFunctions.GetLocalPlayer().Name then
+            if Player ~= RubyHubFunctions.GetLocalPlayer() then
     
                 pcall(function()
-                    
-                    local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
 
                     if Player:FindFirstChild("ESPOutline") then
                         
@@ -503,8 +651,10 @@ function UpdateColors(Color)
 
                     end
     
-                    if PlayerCharacter ~= nil then
+                    if Player.Character then
                         
+                        local PlayerCharacter = Player.Character
+
                         if PlayerCharacter:FindFirstChild("HumanoidRootPart") then
                             
                             PlayerCharacter.HumanoidRootPart.Color = Color
@@ -634,15 +784,29 @@ coroutine.resume(RGBConnection)
 ToggleButton.MouseButton1Click:Connect(function()
     
     getgenv().EnlargedHitboxSettings.Rainbow = not getgenv().EnlargedHitboxSettings.Rainbow
-    ToggleButton.BackgroundColor3 = ToggleColours[getgenv().EnlargedHitboxSettings.Rainbow]
+    ToggleButton.BackgroundColor3 = ExtraSettings.ToggleColours[getgenv().EnlargedHitboxSettings.Rainbow]
 
     if getgenv().EnlargedHitboxSettings.Rainbow == true then
 
         coroutine.resume(RGBConnection)
+
+        RubyHubFunctions.ToastNotification({
+            Title = "Settings Changed",
+            Text = "Rainbow/RGB Mode Enabled",
+            Icon = RubyHubFunctions.Icons.Announcement,
+            Duration = 5
+        })
     
     else
 
         coroutine.yield(RGBConnection)
+
+        RubyHubFunctions.ToastNotification({
+            Title = "Settings Changed",
+            Text = "Rainbow/RGB Mode Disabled",
+            Icon = RubyHubFunctions.Icons.Announcement,
+            Duration = 5
+        })
 
     end
 
@@ -651,14 +815,28 @@ end)
 ToggleButton_2.MouseButton1Click:Connect(function()
         
     getgenv().EnlargedHitboxSettings.ESPEnabled = not getgenv().EnlargedHitboxSettings.ESPEnabled
-    ToggleButton_2.BackgroundColor3 = ToggleColours[getgenv().EnlargedHitboxSettings.ESPEnabled]
+    ToggleButton_2.BackgroundColor3 = ExtraSettings.ToggleColours[getgenv().EnlargedHitboxSettings.ESPEnabled]
+
+    RubyHubFunctions.ToastNotification({
+        Title = "Settings Changed",
+        Text = "Esp is now " .. ExtraSettings.ToggleName[getgenv().EnlargedHitboxSettings.ESPEnabled],
+        Icon = RubyHubFunctions.Icons.Announcement,
+        Duration = 5
+    })
 
 end)
 
 ToggleButton_3.MouseButton1Click:Connect(function()
         
     getgenv().EnlargedHitboxSettings.HitboxEnabled = not getgenv().EnlargedHitboxSettings.HitboxEnabled
-    ToggleButton_3.BackgroundColor3 = ToggleColours[getgenv().EnlargedHitboxSettings.HitboxEnabled]
+    ToggleButton_3.BackgroundColor3 = ExtraSettings.ToggleColours[getgenv().EnlargedHitboxSettings.HitboxEnabled]
+
+    RubyHubFunctions.ToastNotification({
+        Title = "Settings Changed",
+        Text = "Hitbox is now " .. ExtraSettings.ToggleName[getgenv().EnlargedHitboxSettings.HitboxEnabled],
+        Icon = RubyHubFunctions.Icons.Announcement,
+        Duration = 5
+    })
 
 end)
 
@@ -666,8 +844,30 @@ end)
 InputBox.FocusLost:Connect(function()
     
     if tonumber(InputBox.Text) then
+
+        if tonumber(InputBox.Text) > 0 then
         
-        getgenv().EnlargedHitboxSettings.HitboxSize = tonumber(InputBox.Text)
+            getgenv().EnlargedHitboxSettings.HitboxSize = tonumber(InputBox.Text)
+
+            RubyHubFunctions.ToastNotification({
+                Title = "Settings Changed",
+                Text = "Hitbox Size set to " .. tostring(getgenv().EnlargedHitboxSettings.HitboxSize),
+                Icon = RubyHubFunctions.Icons.Announcement,
+                Duration = 5
+            })
+        
+        else
+
+            InputBox.Text = ""
+
+            RubyHubFunctions.ToastNotification({
+                Title = "Attention!",
+                Text = "Hitbox Size must be between 0 and 1 | Ex: 0.85",
+                Icon = RubyHubFunctions.Icons.Announcement,
+                Duration = 5
+            })
+
+        end
 
     end
 
@@ -680,6 +880,13 @@ InputBox_2.FocusLost:Connect(function()
         if tonumber(InputBox_2.Text) >= 0 and tonumber(InputBox_2.Text) <= 1 then
             
             getgenv().EnlargedHitboxSettings.HitboxTransparency = tonumber(InputBox_2.Text)
+
+            RubyHubFunctions.ToastNotification({
+                Title = "Settings Changed",
+                Text = "Hitbox Transparency set to " .. tostring(getgenv().EnlargedHitboxSettings.HitboxTransparency),
+                Icon = RubyHubFunctions.Icons.Announcement,
+                Duration = 5
+            })
         
         else
 
@@ -705,6 +912,13 @@ InputBox_3.FocusLost:Connect(function()
         if tonumber(InputBox_3.Text) >= 0 and tonumber(InputBox_3.Text) <= 1 then
             
             getgenv().EnlargedHitboxSettings.ESPTransparency = tonumber(InputBox_3.Text)
+
+            RubyHubFunctions.ToastNotification({
+                Title = "Settings Changed",
+                Text = "Esp Transparency set to " .. tostring(getgenv().EnlargedHitboxSettings.ESPTransparency),
+                Icon = RubyHubFunctions.Icons.Announcement,
+                Duration = 5
+            })
         
         else
 
@@ -712,7 +926,7 @@ InputBox_3.FocusLost:Connect(function()
 
             RubyHubFunctions.ToastNotification({
                 Title = "Attention!",
-                Text = "ESP Transparency must be between 0 and 1 | Ex: 0.5",
+                Text = "Esp Transparency must be between 0 and 1 | Ex: 0.5",
                 Icon = RubyHubFunctions.Icons.Announcement,
                 Duration = 5
             })
@@ -740,186 +954,38 @@ RubyHubFunctions.Services.UserInputService.InputEnded:Connect(function(Key)
 
 end)
 
-RubyHubFunctions.Services.RunService.RenderStepped:Connect(function()
+RubyHubFunctions.Services.RunService.Heartbeat:Connect(function()
     
     Background.Visible = getgenv().EnlargedHitboxSettings.VisibleGui
 
-    if getgenv().EnlargedHitboxSettings.ESPEnabled == true then
+    for _, Player in RubyHubFunctions.GetPlayers() do
         
-        for _, Player in pairs(RubyHubFunctions.GetPlayers()) do
-            
-            if Player ~= RubyHubFunctions.GetLocalPlayer() or Player.Name ~= RubyHubFunctions.GetLocalPlayer().Name then
-
-                pcall(function()
-                    
-                    local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
-
-                    if PlayerCharacter ~= nil then
-
-                        if PlayerCharacter:FindFirstChild("HumanoidRootPart") then
-                            
-                            if PlayerCharacter.Humanoid.Health > 0 then
-
-                                if not Player:FindFirstChild("ESPOutline") then
-                                    
-                                    local Highlight = Instance.new("Highlight")
-                                    Highlight.Name = "ESPOutline"
-                                    Highlight.Parent = Player
-                                    Highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                                    Highlight.Adornee = PlayerCharacter
-                                    Highlight.OutlineTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency
-                                    Highlight.FillTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency * 2.5
-                                    Highlight.Enabled = true
-                                
-                                elseif Player:FindFirstChild("ESPOutline") then
-
-                                    Player:FindFirstChild("ESPOutline").OutlineTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency
-                                    Player:FindFirstChild("ESPOutline").FillTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency * 2.5
-                                    Player:FindFirstChild("ESPOutline").Enabled = true
-                                    Player:FindFirstChild("ESPOutline").Adornee = PlayerCharacter
-
-                                end
-
-                                if game.PlaceId == 12355337193 and PlayerCharacter:FindFirstChild("Highlight") then
-
-                                    Player:FindFirstChild("ESPOutline").Enabled = false
-
-                                end
+        if Player ~= RubyHubFunctions.GetLocalPlayer() then
     
-                            else
-    
-                                if Player:FindFirstChild("ESPOutline") then
-                                
-                                    Player:FindFirstChild("ESPOutline").Enabled = false
+            local Distance = CheckPosition(Player)
 
-                                end
-    
-                            end
-    
-                        end
-
-                    end
-
-                end)
-
-            end
-
-        end
-    
-    elseif getgenv().EnlargedHitboxSettings.ESPEnabled == false then
-
-        for _, Player in pairs(RubyHubFunctions.GetPlayers()) do
-            
-            if Player ~= RubyHubFunctions.GetLocalPlayer() or Player.Name ~= RubyHubFunctions.GetLocalPlayer().Name then
-
-                pcall(function()
-
-                    if Player:FindFirstChild("ESPOutline") then
-                                    
-                        Player:FindFirstChild("ESPOutline").Enabled = false
-
-                    end
-                    
-                end)
-
-            end
-
-        end
-
-    end
-
-    if getgenv().EnlargedHitboxSettings.HitboxEnabled == true then
-        
-        for _, Player in pairs(RubyHubFunctions.GetPlayers()) do
-            
-            if Player ~= RubyHubFunctions.GetLocalPlayer() or Player.Name ~= RubyHubFunctions.GetLocalPlayer().Name then
+            if tonumber(Distance) and Distance ~= nil then
                 
-                if getgenv().EnlargedHitboxSettings.OriginalHitboxSizes[Player.Name] == nil then
-                    
-                    local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
+                if Distance <= 100 then
 
-                    if PlayerCharacter ~= nil then
-                        
-                        if PlayerCharacter:FindFirstChild("HumanoidRootPart") then
-                            
-                            getgenv().EnlargedHitboxSettings.OriginalHitboxSizes[Player.Name] = PlayerCharacter.HumanoidRootPart.Size
-
-                        end
-
-                    end
-
-                end
-
-                pcall(function()
-                    
-                    local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
-
-                    if PlayerCharacter ~= nil then
-
-                        if PlayerCharacter:FindFirstChild("HumanoidRootPart") then
-                                
-                            if PlayerCharacter.Humanoid.Health > 0 then
-                                
-                                PlayerCharacter.HumanoidRootPart.Size = Vector3.new(getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize, getgenv().EnlargedHitboxSettings.HitboxSize)
-                                PlayerCharacter.HumanoidRootPart.Transparency = getgenv().EnlargedHitboxSettings.HitboxTransparency
-                                PlayerCharacter.HumanoidRootPart.Material = "Neon"
-                                PlayerCharacter.HumanoidRootPart.CanCollide = false
+                    UpdateHitbox(Player, getgenv().EnlargedHitboxSettings.HitboxEnabled)
+                    UpdateEsp(Player, getgenv().EnlargedHitboxSettings.ESPEnabled)
+                
+                else
     
-                            else
-    
-                                PlayerCharacter.HumanoidRootPart.Size = Vector3.new(1, 1, 1)
-                                PlayerCharacter.HumanoidRootPart.Transparency = 1
-    
-                            end
-
-                            if game.PlaceId == 12355337193 and PlayerCharacter:FindFirstChild("Highlight") then
-                            
-                                PlayerCharacter.HumanoidRootPart.Size = Vector3.new(1, 1, 1)
-                                PlayerCharacter.HumanoidRootPart.Transparency = 1
-    
-                            end
-    
-                        end
-
-                    end
-
-                end)
-
-            end
-
-        end
-    
-    elseif getgenv().EnlargedHitboxSettings.HitboxEnabled == false then
-
-        for _, Player in pairs(RubyHubFunctions.GetPlayers()) do
-            
-            if Player ~= RubyHubFunctions.GetLocalPlayer() or Player.Name ~= RubyHubFunctions.GetLocalPlayer().Name then
-
-                if getgenv().EnlargedHitboxSettings.OriginalHitboxSizes[Player.Name] ~= nil then
-                    
-                    pcall(function()
-
-                        local PlayerCharacter = Player.Character or Player.CharacterAdded:Wait()
-                    
-                        if PlayerCharacter ~= nil then
-                            
-                            if PlayerCharacter:FindFirstChild("HumanoidRootPart") then
-                            
-                                PlayerCharacter.HumanoidRootPart.Size = getgenv().EnlargedHitboxSettings.OriginalHitboxSizes[Player.Name]
-                                PlayerCharacter.HumanoidRootPart.Transparency = 1
+                    UpdateHitbox(Player, false)
+                    UpdateEsp(Player, false)
         
-                            end
-    
-                        end
-    
-                    end)
-
                 end
 
+            else
+
+                task.wait(0.1)
+
             end
-
+    
         end
-
+    
     end
 
 end)
