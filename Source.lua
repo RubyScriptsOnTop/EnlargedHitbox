@@ -789,26 +789,19 @@ ToggleButton.MouseButton1Click:Connect(function()
     if getgenv().EnlargedHitboxSettings.Rainbow == true then
 
         coroutine.resume(RGBConnection)
-
-        RubyHubFunctions.ToastNotification({
-            Title = "Settings Changed",
-            Text = "Rainbow/RGB Mode Enabled",
-            Icon = RubyHubFunctions.Icons.Announcement,
-            Duration = 1
-        })
     
     else
 
         coroutine.yield(RGBConnection)
 
-        RubyHubFunctions.ToastNotification({
-            Title = "Settings Changed",
-            Text = "Rainbow/RGB Mode Disabled",
-            Icon = RubyHubFunctions.Icons.Announcement,
-            Duration = 1
-        })
-
     end
+
+    RubyHubFunctions.ToastNotification({
+        Title = "Settings Changed",
+        Text = "Rainbow/RGB Mode " .. ExtraSettings.ToggleName[getgenv().EnlargedHitboxSettings.Rainbow],
+        Icon = RubyHubFunctions.Icons.Announcement,
+        Duration = 0.5
+    })
 
 end)
 
@@ -821,7 +814,7 @@ ToggleButton_2.MouseButton1Click:Connect(function()
         Title = "Settings Changed",
         Text = "Esp is now " .. ExtraSettings.ToggleName[getgenv().EnlargedHitboxSettings.ESPEnabled],
         Icon = RubyHubFunctions.Icons.Announcement,
-        Duration = 1
+        Duration = 0.5
     })
 
 end)
@@ -835,7 +828,7 @@ ToggleButton_3.MouseButton1Click:Connect(function()
         Title = "Settings Changed",
         Text = "Hitbox is now " .. ExtraSettings.ToggleName[getgenv().EnlargedHitboxSettings.HitboxEnabled],
         Icon = RubyHubFunctions.Icons.Announcement,
-        Duration = 1
+        Duration = 0.5
     })
 
 end)
@@ -853,7 +846,7 @@ InputBox.FocusLost:Connect(function()
                 Title = "Settings Changed",
                 Text = "Hitbox Size set to " .. tostring(getgenv().EnlargedHitboxSettings.HitboxSize),
                 Icon = RubyHubFunctions.Icons.Announcement,
-                Duration = 1
+                Duration = 0.5
             })
         
         else
@@ -864,7 +857,7 @@ InputBox.FocusLost:Connect(function()
                 Title = "Attention!",
                 Text = "Hitbox Size must be between 0 and 1 | Ex: 0.85",
                 Icon = RubyHubFunctions.Icons.Announcement,
-                Duration = 3
+                Duration = 1.5
             })
 
         end
@@ -885,7 +878,7 @@ InputBox_2.FocusLost:Connect(function()
                 Title = "Settings Changed",
                 Text = "Hitbox Transparency set to " .. tostring(getgenv().EnlargedHitboxSettings.HitboxTransparency),
                 Icon = RubyHubFunctions.Icons.Announcement,
-                Duration = 1
+                Duration = 0.5
             })
         
         else
@@ -896,7 +889,7 @@ InputBox_2.FocusLost:Connect(function()
                 Title = "Attention!",
                 Text = "Hitbox Transparency must be between 0 and 1 | Ex: 0.85",
                 Icon = RubyHubFunctions.Icons.Announcement,
-                Duration = 3
+                Duration = 1.5
             })
 
         end
@@ -917,7 +910,7 @@ InputBox_3.FocusLost:Connect(function()
                 Title = "Settings Changed",
                 Text = "Esp Transparency set to " .. tostring(getgenv().EnlargedHitboxSettings.ESPTransparency),
                 Icon = RubyHubFunctions.Icons.Announcement,
-                Duration = 1
+                Duration = 0.5
             })
         
         else
@@ -928,7 +921,7 @@ InputBox_3.FocusLost:Connect(function()
                 Title = "Attention!",
                 Text = "Esp Transparency must be between 0 and 1 | Ex: 0.5",
                 Icon = RubyHubFunctions.Icons.Announcement,
-                Duration = 3
+                Duration = 1.5
             })
 
         end
@@ -947,7 +940,7 @@ RubyHubFunctions.Services.UserInputService.InputEnded:Connect(function(Key)
             Title = "GUI Toggled",
             Text = "Press 'P' to toggle it again!",
             Icon = RubyHubFunctions.Icons.Announcement,
-            Duration = 3
+            Duration = 1.5
         })
 
     end
