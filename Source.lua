@@ -487,7 +487,7 @@ RubyHubFunctions.ToastNotification({
 })
 
 RubyHubFunctions.StartupAnimation({
-    Title = "Enlarged ESP", -- default = "Ruby Hub Functions"
+    Title = "Enlarged Hitbox", -- default = "Ruby Hub Functions"
     LoadingText = "Loading Script...", -- default = "Loading..."
     Icon = RubyHubFunctions.Icons.RubyHubNoBG -- default = RubyHubFunctions.Icons.RubyHubNoBG
 })
@@ -644,10 +644,10 @@ function UpdateColors(Color)
     
                 pcall(function()
 
-                    if Player:FindFirstChild("ESPOutline") then
+                    if Player:FindFirstChild("Highlight") then
                         
-                        Player:FindFirstChild("ESPOutline").FillColor = Color
-                        Player:FindFirstChild("ESPOutline").OutlineColor = Color
+                        Player:FindFirstChild("Highlight").FillColor = Color
+                        Player:FindFirstChild("Highlight").OutlineColor = Color
 
                     end
     
