@@ -6,7 +6,6 @@ getgenv().EnlargedHitboxSettings = {
     HitboxSize = 5,
     HitboxTransparency = 0.85,
     ESPTransparency = 0.5,
-    OriginalHitboxSizes = {}
 }
 
 getgenv().RHF_Settings = {
@@ -23,7 +22,8 @@ local ExtraSettings = {
     ToggleName = {
         [true] = "Enabled",
         [false] = "Disabled"
-    }
+    },
+    ScriptVersion = "2.1.0"
 }
 
 RubyHubFunctions = loadstring(game:HttpGet("https://raw.githubusercontent.com/RubyScriptsOnTop/RubyHubFunctions/main/source.lua"))()
@@ -481,7 +481,7 @@ ToggleTip.TextWrapped = true
 
 RubyHubFunctions.ToastNotification({
     Title = "Enlarged Hitbox",
-    Text = "Thank you for choosing Enlarged Hitbox",
+    Text = "You are running version " .. ExtraSettings.ScriptVersion .. ". Thank you for choosing Enlarged Hitbox",
     Icon = RubyHubFunctions.Icons.Announcement,
     Duration = 5
 })
@@ -614,7 +614,7 @@ function UpdateHitbox(Player, Visible)
 
                     if game.PlaceId == 12355337193 and PlayerCharacter:FindFirstChild("Highlight") then
                         
-                        Hitbox.Size = Vector3.new(1, 1, 1)
+                        Hitbox.Size = Vector3.new(4, 4.5, 2)
                         Hitbox.Transparency = 1
 
                     end
@@ -623,7 +623,7 @@ function UpdateHitbox(Player, Visible)
     
                     local Hitbox = PlayerCharacter:FindFirstChild("HumanoidRootPart")
 
-                    Hitbox.Size = Vector3.new(1, 1, 1)
+                    Hitbox.Size = Vector3.new(4, 4.5, 2)
                     Hitbox.Transparency = 1
     
                 end
