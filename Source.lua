@@ -502,13 +502,15 @@ local dragStart
 local startPos
 
 local EspHighlight = Instance.new("Highlight")
-EspHighlight.Name = "Highlight"
+EspHighlight.Name = "EspHighlight"
 
 function AddEsp(Player)
     
     local NewHighlight = EspHighlight:Clone()
     NewHighlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
     NewHighlight.Parent = Player
+    NewHighlight.OutlineTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency
+    NewHighlight.FillTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency * 2.5
     
     if Player.Character then
         
@@ -540,9 +542,9 @@ end
 
 function UpdateEsp(Player, Visible)
     
-    if Player:FindFirstChild("Highlight") ~= nil then
+    if Player:FindFirstChild("EspHighlight") ~= nil then
         
-        local Highlight = Player:FindFirstChild("Highlight")
+        local Highlight = Player:FindFirstChild("EspHighlight")
 
         Highlight.Enabled = Visible
         Highlight.OutlineTransparency = getgenv().EnlargedHitboxSettings.ESPTransparency
@@ -644,10 +646,13 @@ function UpdateColors(Color)
     
                 pcall(function()
 
-                    if Player:FindFirstChild("Highlight") then
+                    EspHighlight.FillColor = Color
+                    EspHighlight.OutlineColor = Color
+
+                    if Player:FindFirstChild("EspHighlight") then
                         
-                        Player:FindFirstChild("Highlight").FillColor = Color
-                        Player:FindFirstChild("Highlight").OutlineColor = Color
+                        Player:FindFirstChild("EspHighlight").FillColor = Color
+                        Player:FindFirstChild("EspHighlight").OutlineColor = Color
 
                     end
     
@@ -747,6 +752,26 @@ function InitiateRGB()
 
 end
 
+function FixHighlight()
+    
+    while true do
+        
+        task.wait(10)
+
+        for _, Item in pairs(game:GetDescendants()) do
+        
+            if Item:IsA("Highlight") and Item.Name == "EspHighlight" and Item ~= EspHighlight then
+                
+                Item:Destroy()
+    
+            end
+    
+        end
+
+    end
+
+end
+
 local function UpdateGUI(input)
     local delta = input.Position - dragStart
     Background.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
@@ -780,6 +805,9 @@ end)
 
 local RGBConnection = coroutine.create(InitiateRGB)
 coroutine.resume(RGBConnection)
+
+local HighlightsConnection = coroutine.create(FixHighlight)
+coroutine.resume(HighlightsConnection)
 
 ToggleButton.MouseButton1Click:Connect(function()
     
@@ -959,7 +987,7 @@ RubyHubFunctions.Services.RunService.Heartbeat:Connect(function()
 
             if tonumber(Distance) and Distance ~= nil then
                 
-                if Distance <= 100 then
+                if Distance <= 225 then
 
                     UpdateHitbox(Player, getgenv().EnlargedHitboxSettings.HitboxEnabled)
                     UpdateEsp(Player, getgenv().EnlargedHitboxSettings.ESPEnabled)
